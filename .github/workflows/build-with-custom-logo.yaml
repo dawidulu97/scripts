@@ -60,11 +60,10 @@ jobs:
               repo: context.repo.repo,
               labels: ["success"]
             })
-      - name: Create comment
-        uses: peter-evans/create-or-update-comment@v3
-        with:
-          issue-number: ${{ github.event.issue.id }}
-          body: The GitHub Action is complete! Download the artifact of the run to flash the firmware
+      - name: Close Issue
+        run: gh issue close --comment "The GitHub Action is complete! Download the artifact of the run to flash the firmware" ${{ github.event.issue.id }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   report-failure:
     needs: 
       - build
@@ -80,8 +79,7 @@ jobs:
               repo: context.repo.repo,
               labels: ["failure"]
             })
-      - name: Create comment
-        uses: peter-evans/create-or-update-comment@v3
-        with:
-          issue-number: ${{ github.event.issue.id }}
-          body: "The GitHub Action has failed! See the logs for details"
+      - name: Close Issue
+        run: gh issue close --comment "The GitHub Action has failed! See the logs for details" ${{ github.event.issue.id }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
