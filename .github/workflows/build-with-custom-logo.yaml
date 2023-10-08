@@ -6,9 +6,11 @@ on:
       board_name:
         description: 'The name of the board. Examples: `robo360`, `jinlon`, `redrix`'
         required: true
+        type: 'string'
       logo:
         description: 'base64 encoded .bmp, maximum 250x250'
         required: false
+        type: 'string'
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
