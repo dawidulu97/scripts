@@ -49,6 +49,7 @@ void (async () => {
     scaledLogo = logo
   }
 
-  console.log('Saving logo to Documentation/coreboot_logo.bmp in coreboot folder')
+  console.log('Saving logo to Documentation/coreboot_logo.bmp in coreboot folder', path.join(__dirname, '../coreboot/Documentation/coreboot_logo.bmp'))
   await scaledLogo.writeAsync(path.join(__dirname, '../coreboot/Documentation/coreboot_logo.bmp'))
+
 })()
