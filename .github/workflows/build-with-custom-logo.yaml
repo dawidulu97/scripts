@@ -16,7 +16,7 @@ jobs:
       - name: Create comment
         uses: peter-evans/create-or-update-comment@v3
         with:
-          issue-number: ${{ github.event.issue.id }}
+          issue-number: ${{ github.event.issue.number }}
           body: "A GitHub Actions build has started for this custom logo. Here is the link to view progress: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -49,7 +49,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.script.outputs.boardName }}-full-rom-custom-logo-${{ github.event.issue.id }}.rom
+          name: ${{ steps.script.outputs.boardName }}-full-rom-custom-logo-${{ github.event.issue.number }}.rom
           path: coreboot/build/coreboot.rom
       - uses: actions/github-script@v6
         with:
@@ -61,7 +61,7 @@ jobs:
               labels: ["success"]
             })
       - name: Close Issue
-        run: gh issue close --comment "The GitHub Action is complete! Download the artifact of the run to flash the firmware" ${{ github.event.issue.id }}
+        run: gh issue close --comment "The GitHub Action is complete! Download the artifact of the run to flash the firmware" ${{ github.event.issue.number }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   report-failure:
@@ -80,6 +80,6 @@ jobs:
               labels: ["failure"]
             })
       - name: Close Issue
-        run: gh issue close --comment "The GitHub Action has failed! See the logs for details" ${{ github.event.issue.id }}
+        run: gh issue close --comment "The GitHub Action has failed! See the logs for details" ${{ github.event.issue.number }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
