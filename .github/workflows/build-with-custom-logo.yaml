@@ -38,6 +38,11 @@ jobs:
       - name: Install Dependencies for Building Coreboot
         working-directory: coreboot
         run: sudo apt-get install -y bison build-essential curl flex git gnat imagemagick libncurses5-dev m4 nasm python-is-python3 uuid-dev zlib1g-dev
+      - name: Cache Coreboot Toolchain
+        uses: actions/cache@v3
+        with:
+          path: coreboot/util/crossgcc/tarballs,coreboot/util/crossgcc/xgxx
+          key: v1
       - name: Build Coreboot Toolchain
         working-directory: coreboot
         run: make crossgcc-i386 CPUS=$(nproc)
