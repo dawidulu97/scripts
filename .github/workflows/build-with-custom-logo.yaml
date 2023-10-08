@@ -48,7 +48,7 @@ jobs:
         run: make crossgcc-i386 CPUS=$(nproc)
       - name: Build UEFI
         working-directory: coreboot
-        run: mkdir -p ~/dev/firmware && build-uefi.sh ${{ steps.script.outputs.boardName }}
+        run: mkdir -p ~/dev/firmware && ./build-uefi.sh ${{ steps.script.outputs.boardName }}
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
