@@ -67,7 +67,7 @@ jobs:
       - name: Build Coreboot
         working-directory: coreboot
         run:  |
-          cp $(find ./configs -name "config.$1.uefi") .config
+          cp $(find ./configs -name "config.${{ steps.script.outputs.boardName }}.uefi") .config
           echo "CONFIG_LOCALVERSION=\"${rev}\"" >>.config
           make clean
           make olddefconfig
