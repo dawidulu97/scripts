@@ -72,7 +72,7 @@ jobs:
           make clean
           make olddefconfig
           make -j$(nproc)
-      - name: Save coreboot toolchain
+      - name: Save coreboot build cache
         uses: actions/cache/save@v3
         with:
           path: |
