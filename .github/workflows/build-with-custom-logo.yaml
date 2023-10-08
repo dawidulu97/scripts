@@ -44,17 +44,17 @@ jobs:
         with:
           path: |
             coreboot/util/crossgcc/tarballs
-            coreboot/util/crossgcc/xgxx
-          key: coreboot-cache-toolchain-v1
+            coreboot/util/crossgcc/xgcc
+          key: coreboot-cache-toolchain-v2
       - name: Build Coreboot Toolchain
         working-directory: coreboot
-        run: ls coreboot/util/crossgcc/xgxx && ls coreboot/util/crossgcc/tarballs && make crossgcc-i386 CPUS=$(nproc)
+        run: make crossgcc-i386 CPUS=$(nproc)
       - name: Save coreboot toolchain
         uses: actions/cache/save@v3
         with:
           path: |
             coreboot/util/crossgcc/tarballs
-            coreboot/util/crossgcc/xgxx
+            coreboot/util/crossgcc/xgcc
           key: ${{ steps.cache-coreboot-toolchain-restore.outputs.cache-primary-key }}
       - name: Restore coreboot build cache
         id: cache-coreboot-build-restore
@@ -68,7 +68,7 @@ jobs:
         working-directory: coreboot
         run:  |
           cp $(find ./configs -name "config.${{ steps.script.outputs.boardName }}.uefi") .config
-          echo "CONFIG_LOCALVERSION=\"${rev}\"" >>.config
+          echo "CONFIG_LOCALVERSION=\"$(git describe --tags --dirty)\"" >>.config
           make clean
           make olddefconfig
           make -j$(nproc)
