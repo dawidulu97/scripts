@@ -1,0 +1,21 @@
+name: Build Full ROM for My Chromebook with My Own Logo (Triggers Automated Build)
+description: After you create the issue, GitHub Actions will automatically build Full ROM for your Chromebook with your logo.
+title: "[Custom Logo Build]: "
+labels: ["build-request"]
+body:
+  - type: input
+    id: board_name
+    attributes:
+      label: Board Name
+      description: "Enter the board name of your chromebook"
+      placeholder: jinlon
+    validations:
+      required: true
+  - type: markdown
+    id: logo
+    attributes:
+      label: Logo
+      description: "Upload a PNG or JPG image into the markdown. Images over 250x250 will be scaled down to fit within 250x250. Do not delete the markdown that shows the link to the image as an image."
+      placeholder: "![My Custom Coreboot Logo](https://github.com/ChocolateLoverRaj/scripts/assets/52586855/844ef682-6a4b-4b46-8440-fc8948b939a5)"
+    validations:
+      required: true
