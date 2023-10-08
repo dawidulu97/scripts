@@ -9,6 +9,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Set build label
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["build", "build-full-rom"]
+            })
       - name: Create comment
         uses: peter-evans/create-or-update-comment@v3
         with:
@@ -80,7 +90,8 @@ jobs:
         with:
           name: ${{ steps.script.outputs.boardName }}-full-rom-custom-logo-${{ github.event.issue.number }}.rom
           path: coreboot/build/coreboot.rom
-      - uses: actions/github-script@v6
+      - name: Set success label
+        uses: actions/github-script@v6
         with:
           script: |
             github.rest.issues.addLabels({
@@ -88,6 +99,12 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               labels: ["success"]
+            })
+            github.rest.issues.removeLabel({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: ["failure"]
             })
       - name: Close Issue
         run: gh issue close --comment "The GitHub Action is complete! Download the artifact of the run to flash the firmware" ${{ github.event.issue.number }}
@@ -101,7 +118,8 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-      - uses: actions/github-script@v6
+      - name: Set failure label
+        uses: actions/github-script@v6
         with:
           script: |
             github.rest.issues.addLabels({
@@ -109,6 +127,12 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               labels: ["failure"]
+            })
+            github.rest.issues.removeLabel({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: ["success"]
             })
       - name: Close Issue
         run: gh issue close --comment "The GitHub Action has failed! See the logs for details" ${{ github.event.issue.number }}
