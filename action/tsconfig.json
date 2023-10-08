@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "strictBindCallApply": true,
+        "strictFunctionTypes": true,
+        "strictNullChecks": true,
+        "esModuleInterop": true
+    }
+}

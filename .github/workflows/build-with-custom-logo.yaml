@@ -10,9 +10,18 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           echo "$GITHUB_CONTEXT"
-  
+      - name: Run Script
+        run: npm start
+        working-directory: action
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
