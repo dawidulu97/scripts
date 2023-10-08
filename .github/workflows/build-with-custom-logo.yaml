@@ -48,7 +48,7 @@ jobs:
           key: coreboot-cache-toolchain-v1
       - name: Build Coreboot Toolchain
         working-directory: coreboot
-        run: make crossgcc-i386 CPUS=$(nproc)
+        run: ls coreboot/util/crossgcc/xgxx && ls coreboot/util/crossgcc/tarballs && make crossgcc-i386 CPUS=$(nproc)
       - name: Save coreboot toolchain
         uses: actions/cache/save@v3
         with:
