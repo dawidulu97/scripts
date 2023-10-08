@@ -1,5 +1,5 @@
 name: Build Coreboot for a Chromebook, with custom logo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+run-name: Build ${{ github.event.issue.title }} for ${{ github.actor }}
 on:
   issues:
     types: 
