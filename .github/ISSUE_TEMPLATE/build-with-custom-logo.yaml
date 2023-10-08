@@ -14,8 +14,8 @@ body:
   - type: markdown
     id: logo
     attributes:
-      label: Logo
-      description: "Upload a PNG or JPG image into the markdown. Images over 250x250 will be scaled down to fit within 250x250. Do not delete the markdown that shows the link to the image as an image."
-      placeholder: "![My Custom Coreboot Logo](https://github.com/ChocolateLoverRaj/scripts/assets/52586855/844ef682-6a4b-4b46-8440-fc8948b939a5)"
+      # label: Logo
+      # description: "Upload a PNG or JPG image into the markdown. Images over 250x250 will be scaled down to fit within 250x250. Do not delete the markdown that shows the link to the image as an image."
+      value: "![My Custom Coreboot Logo](https://github.com/ChocolateLoverRaj/scripts/assets/52586855/844ef682-6a4b-4b46-8440-fc8948b939a5)"
     validations:
       required: true
