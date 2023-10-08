@@ -19,6 +19,9 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           echo "$GITHUB_CONTEXT"
+      - name: Install Dependencies
+        run: npm install
+        working-directory: action
       - name: Run Script
         run: npm start
         working-directory: action
