@@ -38,23 +38,47 @@ jobs:
       - name: Install Dependencies for Building Coreboot
         working-directory: coreboot
         run: sudo apt-get install -y bison build-essential curl flex git gnat imagemagick libncurses5-dev m4 nasm python-is-python3 uuid-dev zlib1g-dev
-      - name: Cache Coreboot Toolchain
-        uses: actions/cache@v3
+      - name: Restore cached coreboot toolchain
+        id: cache-coreboot-toolchain-restore
+        uses: actions/cache/restore@v3
         with:
-          path: coreboot/util/crossgcc/tarballs,coreboot/util/crossgcc/xgxx
-          key: v1
+          path: |
+            coreboot/util/crossgcc/tarballs
+            coreboot/util/crossgcc/xgxx
+          key: coreboot-cache-toolchain-v1
       - name: Build Coreboot Toolchain
         working-directory: coreboot
         run: make crossgcc-i386 CPUS=$(nproc)
+      - name: Save coreboot toolchain
+        uses: actions/cache/save@v3
+        with:
+          path: |
+            coreboot/util/crossgcc/tarballs
+            coreboot/util/crossgcc/xgxx
+          key: ${{ steps.cache-coreboot-toolchain-restore.outputs.cache-primary-key }}
+      - name: Restore coreboot build cache
+        id: cache-coreboot-build-restore
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            payloads/external/edk2/workspace
+            build
+          key: coreboot-cache-build-v1
       - name: Build Coreboot
         working-directory: coreboot
         run:  |
-          cfg_file=$(find ./configs -name "config.$1.uefi")
-          cp "$cfg_file" .config
+          cp $(find ./configs -name "config.$1.uefi") .config
           echo "CONFIG_LOCALVERSION=\"${rev}\"" >>.config
           make clean
           make olddefconfig
           make -j$(nproc)
+      - name: Save coreboot toolchain
+        uses: actions/cache/save@v3
+        with:
+          path: |
+            payloads/external/edk2/workspace
+            build
+          key: ${{ steps.cache-coreboot-build-restore.outputs.cache-primary-key }}
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
