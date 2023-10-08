@@ -46,9 +46,15 @@ jobs:
       - name: Build Coreboot Toolchain
         working-directory: coreboot
         run: make crossgcc-i386 CPUS=$(nproc)
-      - name: Build UEFI
+      - name: Build Coreboot
         working-directory: coreboot
-        run: mkdir -p ~/dev/firmware && ./build-uefi.sh ${{ steps.script.outputs.boardName }}
+        run:  |
+          cfg_file=$(find ./configs -name "config.$1.uefi")
+          cp "$cfg_file" .config
+          echo "CONFIG_LOCALVERSION=\"${rev}\"" >>.config
+          make clean
+          make olddefconfig
+          make -j$(nproc)
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
