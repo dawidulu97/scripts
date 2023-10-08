@@ -16,6 +16,8 @@ jobs:
           body: "A GitHub Actions build has started for this custom logo. Here is the link to view progress: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
       - name: Check out repository code
         uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
@@ -38,7 +40,7 @@ jobs:
         run: sudo apt-get install -y bison build-essential curl flex git gnat imagemagick libncurses5-dev m4 nasm python-is-python3 uuid-dev zlib1g-dev
       - name: Build Coreboot Toolchain
         working-directory: coreboot
-        run: ls Documentation/coreboot_logo.bmp && make help_toolchain && make crossgcc-i386 CPUS=$(nproc)
+        run: make crossgcc-i386 CPUS=$(nproc)
       - name: Build UEFI
         working-directory: coreboot
         run: mkdir -p ~/dev/firmware && build-uefi.sh ${{ steps.script.outputs.boardName }}
