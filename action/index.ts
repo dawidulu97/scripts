@@ -1,6 +1,7 @@
 import never from 'never'
 import Jimp from 'jimp'
 import path from 'path'
+import fs from 'fs/promises'
 
 interface Context {
   token: string
@@ -25,6 +26,8 @@ void (async () => {
   const boardName = bodyLines[2]
 
   console.log(`Board name: ${boardName}`)
+
+  await fs.writeFile(process.env.GITHUB_OUTPUT as string, `boardName=${boardName}`, 'utf8')
 
   const logoMarkdown = bodyLines[6]
 

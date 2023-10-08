@@ -9,6 +9,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Lock Issue
+        uses: OSDKDev/lock-issues@v1.1
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.issue.id }}
+          body: "A GitHub Actions build has started for this custom logo. Here is the link to view progress: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
       - name: Check out repository code
         uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -19,11 +28,60 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           echo "$GITHUB_CONTEXT"
-      - name: Install Dependencies
+      - name: Install Dependencies for Logo Replacing Script
         run: npm install
         working-directory: action
-      - name: Run Script
+      - id: script
+        name: Run Logo Replacing Script
         run: npm start
         working-directory: action
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
+      - name: Install Dependencies for Building Coreboot
+        working-directory: coreboot
+        run: sudo apt-get install -y bison build-essential curl flex git gnat imagemagick libncurses5-dev m4 nasm python-is-python3 uuid-dev zlib1g-dev
+      - name: Build Coreboot Toolchain
+        working-directory: coreboot
+        run: make crossgcc-i386 CPUS=$(nproc)
+      - name: Build UEFI
+        working-directory: coreboot
+        run: mkdir -p ~/dev/firmware && build-uefi.sh ${{ steps.script.outputs.boardName }}
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.script.outputs.boardName }}-full-rom-custom-logo-${{ github.event.issue.id }}.rom
+          path: coreboot/build/coreboot.rom
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["success"]
+            })
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.issue.id }}
+          body: The GitHub Action is complete! Download the artifact of the run to flash the firmware
+  report-failure:
+    needs: 
+      - build
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["failure"]
+            })
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.issue.id }}
+          body: "The GitHub Action has failed! See the logs for details"
