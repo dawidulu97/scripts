@@ -9,10 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Lock Issue
-        uses: OSDKDev/lock-issues@v1.1
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
       - name: Create comment
         uses: peter-evans/create-or-update-comment@v3
         with:
