@@ -60,10 +60,8 @@ jobs:
         id: cache-coreboot-build-restore
         uses: actions/cache/restore@v3
         with:
-          path: |
-            payloads/external/edk2/workspace
-            build
-          key: coreboot-cache-build-v1
+          path: coreboot/payloads/external/edk2/workspace
+          key: coreboot-cache-build-v2
       - name: Build Coreboot
         working-directory: coreboot
         run:  |
@@ -75,9 +73,7 @@ jobs:
       - name: Save coreboot build cache
         uses: actions/cache/save@v3
         with:
-          path: |
-            payloads/external/edk2/workspace
-            build
+          path: coreboot/payloads/external/edk2/workspace
           key: ${{ steps.cache-coreboot-build-restore.outputs.cache-primary-key }}
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
