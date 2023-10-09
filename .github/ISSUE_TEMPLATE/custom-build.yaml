@@ -25,6 +25,6 @@ body:
       description: Fixes sleep bugs on MacOS when set to no.
       multiple: false
       options:
-        - No
-        - Yes
+        - "No"
+        - "Yes"
       
