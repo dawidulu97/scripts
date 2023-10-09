@@ -6,6 +6,7 @@
         "flashrom",
         "jinlon",
         "redrix",
-        "robo360"
+        "robo360",
+        "DISABLE_HECI1_AT_PRE_BOOT"
     ]
 }

@@ -1,8 +1,8 @@
-import never from 'never'
 import Jimp from 'jimp'
 import path from 'path'
 import fs from 'fs/promises'
 import { convert as svgToPng } from 'convert-svg-to-png'
+import parseInputs from './parseInputs'
 
 interface Context {
   token: string
@@ -14,32 +14,19 @@ interface Context {
 }
 
 void (async () => {
-  console.log(process.env.GITHUB_CONTEXT)
   const context = JSON.parse(process.env.GITHUB_CONTEXT as string) as Context
 
   const { body } = context.event.issue
 
-  console.log(body)
+  const inputs = parseInputs(body)
+  console.log('Parsed inputs:', inputs)
 
-  const bodyLines = body.split('\n')
+  await fs.writeFile(process.env.GITHUB_OUTPUT as string, `boardName=${inputs.boardName}`, 'utf8')
 
-  console.log('Issue body lines:', bodyLines)
+  if (inputs.logo !== undefined) {
+    console.log(`Parsed logo URL: ${inputs.logo}`)
 
-  const boardName = bodyLines[2].trim().toLowerCase()
-
-  console.log(`Board name: ${boardName}`)
-
-  await fs.writeFile(process.env.GITHUB_OUTPUT as string, `boardName=${boardName}`, 'utf8')
-
-  const logoMarkdown = bodyLines[6].trim()
-
-  if (logoMarkdown !== '') {
-    const imageUrlRegex = /!\[.*\]\((.*)\)/g
-    const match = (imageUrlRegex.exec(logoMarkdown))?.[1] ?? never('Invalid markdown logo')
-
-    console.log(`Parsed logo URL: ${match}`)
-
-    const r = await fetch(match)
+    const r = await fetch(inputs.logo)
     const contentType = r.headers.get('Content-Type')
 
     const blob = await r.blob()
@@ -72,5 +59,13 @@ void (async () => {
     await scaledLogo.writeAsync(path.join(__dirname, '../coreboot/Documentation/coreboot_logo.bmp'))
   } else {
     console.log('No custom logo inputted. Default logo will be used')
+  }
+
+  const configFile = path.join(__dirname, '../coreboot/.config')
+  if (inputs.DISABLE_HECI1_AT_PRE_BOOT !== undefined) {
+    console.log('Adding custom DISABLE_HECI1_AT_PRE_BOOT to .config')
+    await fs.appendFile(configFile, `DISABLE_HECI1_AT_PRE_BOOT=${inputs.DISABLE_HECI1_AT_PRE_BOOT ? 'y' : 'n'}\n`, 'utf8')
+  } else {
+    console.log('Not changing DISABLE_HECI1_AT_PRE_BOOT')
   }
 })()
