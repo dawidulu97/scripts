@@ -64,7 +64,7 @@ void (async () => {
   const configFile = path.join(__dirname, '../coreboot/.config')
   if (inputs.DISABLE_HECI1_AT_PRE_BOOT !== undefined) {
     console.log('Adding custom DISABLE_HECI1_AT_PRE_BOOT to .config')
-    await fs.appendFile(configFile, `DISABLE_HECI1_AT_PRE_BOOT=${inputs.DISABLE_HECI1_AT_PRE_BOOT ? 'y' : 'n'}\n`, 'utf8')
+    await fs.appendFile(configFile, `CONFIG_DISABLE_HECI1_AT_PRE_BOOT=${inputs.DISABLE_HECI1_AT_PRE_BOOT ? 'y' : 'n'}\n`, 'utf8')
   } else {
     console.log('Not changing DISABLE_HECI1_AT_PRE_BOOT')
   }
