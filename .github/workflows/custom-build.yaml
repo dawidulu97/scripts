@@ -86,7 +86,7 @@ jobs:
       - name: Build Coreboot
         working-directory: coreboot
         run:  |
-          cp $(find ./configs -name "config.${{ steps.script.outputs.boardName }}.uefi") .config
+          cat $(find ./configs -name "config.${{ steps.script.outputs.boardName }}.uefi") >> .config
           echo "CONFIG_LOCALVERSION=\"$(git describe --tags --dirty)\"" >>.config
           make clean
           make olddefconfig
