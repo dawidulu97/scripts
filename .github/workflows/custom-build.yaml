@@ -13,6 +13,7 @@ jobs:
         run: |
           chmod +x ./action-sh/zip-rom.sh
           ./action-sh/zip-rom.sh
+        shell: bash
       - name: Dump GitHub context (For Debugging)
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
