@@ -9,6 +9,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Test
+        run: ./action-sh/zip-rom.sh
       - name: Dump GitHub context (For Debugging)
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
@@ -49,11 +51,11 @@ jobs:
             ${{ runner.os }}-node-
       - name: Install Dependencies for Logo Replacing Script
         run: npm install
-        working-directory: action
+        working-directory: action-ts
       - id: script
         name: Run Logo Replacing Script
         run: npm start
-        working-directory: action
+        working-directory: action-ts
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
       - name: Install Dependencies for Building Coreboot
