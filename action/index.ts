@@ -23,7 +23,7 @@ void (async () => {
 
   console.log(bodyLines)
 
-  const boardName = bodyLines[2].toLowerCase()
+  const boardName = bodyLines[2].trim().toLowerCase()
 
   console.log(`Board name: ${boardName}`)
 
