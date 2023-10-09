@@ -1,0 +1,6 @@
+artifactPath=/tmp/tmp.PsAKsbFVKU/jinlon.tar.gz
+artifactPath=/tmp/tmp.OiZNW16kql/jinlon.tar.gz
+artifactPath=/tmp/tmp.gDiPZLcu0I/jinlon.tar.gz
+artifactPath=/tmp/tmp.zbm0MUMwU3/jinlon.tar.gz
+artifactPath=/tmp/tmp.TL1wwMGvI1/jinlon.tar.gz
+artifactPath=/tmp/tmp.60LPgIrzjn/jinlon.tar.gz

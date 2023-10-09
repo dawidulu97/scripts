@@ -33,8 +33,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-      - name: Test
-        run: ./action-sh/zip-rom.sh
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
@@ -101,11 +99,16 @@ jobs:
         with:
           path: coreboot/payloads/external/edk2/workspace
           key: ${{ steps.cache-coreboot-build-restore.outputs.cache-primary-key }}
+      - name: Test
+        id: zip-rom
+        run: ./action-sh/zip-rom.sh
+        env:
+          BUILD_FILE_NAME: ${{ steps.script.outputs.boardName }}-full-rom-custom-logo-${{ github.event.issue.number }}
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.script.outputs.boardName }}-full-rom-custom-logo-${{ github.event.issue.number }}.rom
-          path: coreboot/build/coreboot.rom
+          name: ${{ steps.script.outputs.boardName }}-full-rom-custom-logo-${{ github.event.issue.number }}.tar.gz
+          path: ${{ steps.zip-rom.outputs.artifactPath }}
       - name: Set success label
         uses: actions/github-script@v6
         with:
