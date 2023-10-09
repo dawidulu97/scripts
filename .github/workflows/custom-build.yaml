@@ -90,6 +90,9 @@ jobs:
           echo "CONFIG_LOCALVERSION=\"$(git describe --tags --dirty)\"" >>.config
           make clean
           make olddefconfig
+          echo "*** .config ***"
+          cat .config
+          echo "*** end of .config ***"
           make -j$(nproc)
       - name: Save coreboot build cache
         uses: actions/cache/save@v3
