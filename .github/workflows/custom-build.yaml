@@ -1,4 +1,4 @@
-name: Build Coreboot for a Chromebook, with custom logo
+name: Build Coreboot for a Chromebook
 run-name: Build ${{ github.event.issue.title }} for ${{ github.actor }}
 on:
   issues:
@@ -34,10 +34,7 @@ jobs:
         with:
           submodules: 'recursive'
       - name: Test
-        run: |
-          chmod +x ./action-sh/zip-rom.sh
-          ./action-sh/zip-rom.sh
-        shell: bash
+        run: ./action-sh/zip-rom.sh
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
