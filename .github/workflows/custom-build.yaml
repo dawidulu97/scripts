@@ -114,12 +114,10 @@ jobs:
               repo: context.repo.repo,
               labels: ["success"]
             })
-            github.rest.issues.removeLabel({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: ["failure"]
-            })
+      - name: Remove failure label
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: failure
       - name: Close Issue
         run: gh issue close --comment "The GitHub Action is complete! Download the artifact of the run to flash the firmware" ${{ github.event.issue.number }}
         env:
@@ -142,12 +140,10 @@ jobs:
               repo: context.repo.repo,
               labels: ["failure"]
             })
-            github.rest.issues.removeLabel({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: ["success"]
-            })
+      - name: Remove success label
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: success
       - name: Close Issue
         run: gh issue close --comment "The GitHub Action has failed! See the logs for details" ${{ github.event.issue.number }}
         env:
