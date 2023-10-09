@@ -1,5 +1,5 @@
 #!/bin/bash
-TMP=mktemp
+TMP=$(mktemp)
 echo $TMP
 echo "Hi"
 pwd

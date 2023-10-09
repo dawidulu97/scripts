@@ -10,7 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Test
-        run: ./action-sh/zip-rom.sh
+        run: |
+          chmod +x ./action-sh/zip-rom.sh
+          ./action-sh/zip-rom.sh
       - name: Dump GitHub context (For Debugging)
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
