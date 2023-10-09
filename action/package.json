@@ -12,6 +12,7 @@
     },
     "dependencies": {
         "@octokit/rest": "^20.0.2",
+        "convert-svg-to-png": "^0.6.4",
         "jimp": "^0.22.10",
         "never": "^1.1.0"
     }
