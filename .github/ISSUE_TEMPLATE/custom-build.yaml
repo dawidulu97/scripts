@@ -1,5 +1,5 @@
-name: Build Full ROM for My Chromebook with My Own Logo (Triggers Automated Build)
-description: After you create the issue, GitHub Actions will automatically build Full ROM for your Chromebook with your logo.
+name: Build a custom Full ROM for my Chromebook (Triggers Automated Build)
+description: Change logo and other options
 title: "[Custom Logo Build]: "
 labels: ["build-request"]
 body:
@@ -19,3 +19,12 @@ body:
       value: "![My Custom Coreboot Logo](https://github.com/ChocolateLoverRaj/scripts/assets/52586855/844ef682-6a4b-4b46-8440-fc8948b939a5)"
     validations:
       required: false
+  - type: dropdown
+    attributes:
+      label: "`DISABLE_HECI1_AT_PRE_BOOT`"
+      description: Fixes sleep bugs on MacOS when set to no.
+      multiple: false
+      options:
+        - No
+        - Yes
+      
