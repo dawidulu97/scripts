@@ -158,7 +158,7 @@ echo "Adding custom payload"
 $cbfstool $TMP/$CUSTOMIZED_RWL_FILE add-payload -n altfw/edk2 -f $PROJECT_DIR/coreboot/build/UEFIPAYLOAD.fd -c LZMA || exit 1
 
 echo "Creating sha1"
-sha1sum $TMP/$CUSTOMIZED_RWL_FILE >$TMP/$CUSTOMIZED_RWL_FILE.sha1 || exit 1
+sha1sum $CUSTOMIZED_RWL_FILE >$CUSTOMIZED_RWL_FILE.sha1 || exit 1
 
 cp $PROJECT_DIR/action-sh/flash-rwl.sh $TMP
 cp $PROJECT_DIR/action-sh/flashrom $TMP
