@@ -127,7 +127,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.build-full-rom.outputs.artifactPath }}${{ steps.build-alt-fw.outputs.artifactPath }}
+          name: ${{ steps.build-full-rom.outputs.artifactName }}${{ steps.build-alt-fw.outputs.artifactName }}
           path: ${{ steps.build-full-rom.outputs.artifactPath }}${{ steps.build-alt-fw.outputs.artifactPath }}
       - name: Set success label
         uses: actions/github-script@v6

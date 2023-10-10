@@ -19,4 +19,5 @@ cd $TMP
 echo $BUILD_FILE_NAME >BUILD_FILE_NAME
 sha1sum $BUILD_FILE_NAME.rom >$BUILD_FILE_NAME.rom.sha1
 tar -czvf $TMP2/$BUILD_FILE_NAME.tar.gz .
+echo artifactName=$BUILD_FILE_NAME.tar.gz >>$GITHUB_OUTPUT
 echo artifactPath=$TMP2/$BUILD_FILE_NAME.tar.gz >>$GITHUB_OUTPUT

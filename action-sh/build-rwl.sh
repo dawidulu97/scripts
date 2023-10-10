@@ -167,4 +167,5 @@ echo $BUILD_FILE_NAME >$TMP/BUILD_FILE_NAME
 TMP2=$(mktemp -d)
 echo "Creating .tar.gz file"
 tar -czvf $TMP2/$BUILD_FILE_NAME.tar.gz . || exit 1
+echo artifactName=$BUILD_FILE_NAME.tar.gz >>$GITHUB_OUTPUT
 echo artifactPath=$TMP2/$BUILD_FILE_NAME.tar.gz >>$GITHUB_OUTPUT
