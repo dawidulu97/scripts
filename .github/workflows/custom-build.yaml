@@ -22,7 +22,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              labels: ["build", "build-full-rom"]
+              labels: ["build"]
             })
       - name: Create comment
         uses: peter-evans/create-or-update-comment@v3
@@ -83,12 +83,42 @@ jobs:
         with:
           path: coreboot/payloads/external/edk2/workspace
           key: coreboot-cache-build-v2
+      - name: Set build Full Rom label
+        if: ${{ steps.script.outputs.firmwareType == 'FULL_ROM' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["build-full-rom"]
+            })
       - name: Build Full ROM
-        id: zip-rom
+        if: ${{ steps.script.outputs.firmwareType == 'FULL_ROM' }}
+        id: build-full-rom
         run: ./action-sh/build-full-rom.sh
         env:
           BOARD_NAME: ${{ steps.script.outputs.boardName }}
-          BUILD_FILE_NAME: ${{ steps.script.outputs.boardName }}-full-rom-custom-logo-${{ github.event.issue.number }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+      - name: Set build Alt FW label
+        if: ${{ steps.script.outputs.firmwareType == 'ALT_FW' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["build-alt-fw"]
+            })
+      - name: Customize Alt FW
+        if: ${{ steps.script.outputs.firmwareType == 'ALT_FW' }}
+        id: build-alt-fw
+        run: ./action-sh/build-rwl.sh
+        env:
+          BOARD_NAME: ${{ steps.script.outputs.boardName }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
       - name: Save coreboot build cache
         uses: actions/cache/save@v3
         with:
@@ -97,8 +127,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.script.outputs.boardName }}-full-rom-custom-logo-${{ github.event.issue.number }}.tar.gz
-          path: ${{ steps.zip-rom.outputs.artifactPath }}
+          path: ${{ steps.build-full-rom.outputs.artifactPath }}${{ steps.build-alt-fw.outputs.artifactPath }}
       - name: Set success label
         uses: actions/github-script@v6
         with:

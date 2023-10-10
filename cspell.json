@@ -3,10 +3,11 @@
     "version": "0.2",
     "words": [
         "Coreboot",
+        "DISABLE_HECI1_AT_PRE_BOOT",
         "flashrom",
         "jinlon",
         "redrix",
         "robo360",
-        "DISABLE_HECI1_AT_PRE_BOOT"
+        "UEFI"
     ]
 }
