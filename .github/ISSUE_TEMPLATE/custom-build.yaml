@@ -3,6 +3,16 @@ description: Change logo and other options
 title: "[Custom Logo Build]: "
 labels: ["build-request"]
 body:
+  - type: dropdown
+    attributes:
+      label: Firmware type
+      description: Full ROM replaces ChromeOS firmware. Alt FW is RW_LEGACY with UEFI.
+      multiple: false
+      options:
+        - "Full ROM"
+        - "Alt FW"
+    validations:
+      required: true
   - type: input
     id: board_name
     attributes:
