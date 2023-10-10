@@ -1,5 +1,6 @@
 import never from 'never'
 import type Inputs from './Inputs'
+import FirmwareType from './FirmwareType'
 
 const parseInputs = (issueBody: string): Inputs => {
   const bodyLines = issueBody.split('\n')
@@ -12,9 +13,14 @@ const parseInputs = (issueBody: string): Inputs => {
 
   console.log('Trimmed non-empty lines:', trimmedNonEmptyLines)
 
-  const boardName = trimmedNonEmptyLines[1].toLowerCase()
+  const firmwareType = new Map<string, FirmwareType>([
+    ['Full ROM', FirmwareType.FULL_ROM],
+    ['Alt FW', FirmwareType.ALT_FW]
+  ]).get(trimmedNonEmptyLines[1]) ?? never('Invalid firmware type')
 
-  const logoMarkdown = trimmedNonEmptyLines[3]
+  const boardName = trimmedNonEmptyLines[3].toLowerCase()
+
+  const logoMarkdown = trimmedNonEmptyLines[5]
   let logo: string | undefined
   if (logoMarkdown !== '_No response_') {
     const imageUrlRegex = /!\[.*\]\((.*)\)/g
@@ -30,6 +36,7 @@ const parseInputs = (issueBody: string): Inputs => {
   ]).get(trimmedNonEmptyLines[5])
 
   return {
+    firmwareType,
     boardName,
     logo,
     DISABLE_HECI1_AT_PRE_BOOT

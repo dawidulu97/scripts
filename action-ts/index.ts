@@ -21,7 +21,7 @@ void (async () => {
   const inputs = parseInputs(body)
   console.log('Parsed inputs:', inputs)
 
-  await fs.writeFile(process.env.GITHUB_OUTPUT as string, `boardName=${inputs.boardName}`, 'utf8')
+  await fs.writeFile(process.env.GITHUB_OUTPUT as string, `boardName=${inputs.boardName}\nfirmwareType=${inputs.firmwareType}`, 'utf8')
 
   if (inputs.logo !== undefined) {
     console.log(`Parsed logo URL: ${inputs.logo}`)
