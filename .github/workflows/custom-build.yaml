@@ -83,27 +83,17 @@ jobs:
         with:
           path: coreboot/payloads/external/edk2/workspace
           key: coreboot-cache-build-v2
-      - name: Build Coreboot
-        working-directory: coreboot
-        run:  |
-          cat $(find ./configs -name "config.${{ steps.script.outputs.boardName }}.uefi") >> .config
-          echo "CONFIG_LOCALVERSION=\"$(git describe --tags --dirty)\"" >>.config
-          make clean
-          make olddefconfig
-          echo "*** .config ***"
-          cat .config
-          echo "*** end of .config ***"
-          make -j$(nproc)
+      - name: Build Full ROM
+        id: zip-rom
+        run: ./action-sh/build-full-rom.sh
+        env:
+          BOARD_NAME: ${{ steps.script.outputs.boardName }}
+          BUILD_FILE_NAME: ${{ steps.script.outputs.boardName }}-full-rom-custom-logo-${{ github.event.issue.number }}
       - name: Save coreboot build cache
         uses: actions/cache/save@v3
         with:
           path: coreboot/payloads/external/edk2/workspace
           key: ${{ steps.cache-coreboot-build-restore.outputs.cache-primary-key }}
-      - name: Test
-        id: zip-rom
-        run: ./action-sh/zip-rom.sh
-        env:
-          BUILD_FILE_NAME: ${{ steps.script.outputs.boardName }}-full-rom-custom-logo-${{ github.event.issue.number }}
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:

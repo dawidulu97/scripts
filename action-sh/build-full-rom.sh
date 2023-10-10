@@ -1,4 +1,14 @@
 #!/bin/bash
+cd coreboot
+cat $(find ./configs -name "config.$BOARD_NAME.uefi") >> .config
+echo "CONFIG_LOCALVERSION=\"$(git describe --tags --dirty)\"" >>.config
+make clean
+make olddefconfig
+echo "*** .config ***"
+cat .config
+echo "*** end of .config ***"
+make -j$(nproc)
+cd ..
 TMP=$(mktemp -d)
 cp coreboot/build/coreboot.rom $TMP/$BUILD_FILE_NAME.rom
 cp action-sh/flash-full-rom.sh $TMP
