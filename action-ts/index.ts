@@ -72,21 +72,21 @@ void (async () => {
 
   if (inputs.EDK2_FULL_SCREEN_SETUP !== undefined) {
     console.log('Adding custom EDK2_FULL_SCREEN_SETUP to .config')
-    await fs.appendFile(configFile, `EDK2_FULL_SCREEN_SETUP=${toConfig(inputs.EDK2_FULL_SCREEN_SETUP)}\n`, 'utf8')
+    await fs.appendFile(configFile, `CONFIG_EDK2_FULL_SCREEN_SETUP=${toConfig(inputs.EDK2_FULL_SCREEN_SETUP)}\n`, 'utf8')
   } else {
     console.log('Not changing EDK2_FULL_SCREEN_SETUP')
   }
 
   if (inputs.EDK2_BOOT_MANAGER_ESCAPE !== undefined) {
     console.log('Adding custom EDK2_BOOT_MANAGER_ESCAPE to .config')
-    await fs.appendFile(configFile, `EDK2_BOOT_MANAGER_ESCAPE=${toConfig(inputs.EDK2_BOOT_MANAGER_ESCAPE)}\n`, 'utf8')
+    await fs.appendFile(configFile, `CONFIG_EDK2_BOOT_MANAGER_ESCAPE=${toConfig(inputs.EDK2_BOOT_MANAGER_ESCAPE)}\n`, 'utf8')
   } else {
     console.log('Not changing EDK2_BOOT_MANAGER_ESCAPE')
   }
 
   if (inputs.EDK2_BOOT_TIMEOUT !== undefined) {
     console.log('Adding custom EDK2_BOOT_TIMEOUT to .config')
-    await fs.appendFile(configFile, `EDK2_BOOT_TIMEOUT=${inputs.EDK2_BOOT_TIMEOUT}\n`, 'utf8')
+    await fs.appendFile(configFile, `CONFIG_EDK2_BOOT_TIMEOUT=${inputs.EDK2_BOOT_TIMEOUT}\n`, 'utf8')
   } else {
     console.log('Not changing EDK2_BOOT_TIMEOUT')
   }
