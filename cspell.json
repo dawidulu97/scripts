@@ -5,6 +5,7 @@
         "Coreboot",
         "DISABLE_HECI1_AT_PRE_BOOT",
         "flashrom",
+        "frontpage",
         "jinlon",
         "redrix",
         "robo360",

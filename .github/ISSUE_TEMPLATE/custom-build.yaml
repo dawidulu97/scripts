@@ -37,4 +37,23 @@ body:
       options:
         - "No"
         - "Yes"
-      
+  - type: dropdown
+    attributes:
+      label: EDK2_FULL_SCREEN_SETUP
+      description: Use the full screen for the edk2 frontpage
+      multiple: false
+      options:
+        - "No"
+        - "Yes"
+  - type: dropdown
+    attributes:
+      label: EDK2_BOOT_MANAGER_ESCAPE
+      description: Use Escape key for Boot Manager
+      multiple: false
+      options:
+        - "No"
+        - "Yes"
+  - type: input
+    attributes:
+      label: EDK2_BOOT_TIMEOUT
+      description: Set the timeout for boot menu prompt (seconds)
