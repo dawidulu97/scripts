@@ -124,6 +124,9 @@ cd coreboot
 echo "CONFIG_BOARD_EMULATION_QEMU_X86_Q35=y" >.config
 make clean
 make olddefconfig
+echo "*** .config ***"
+cat .config
+echo "*** end of .config ***"
 make -j$(nproc)
 
 rwlegacy_file_without_extension=${rwlegacy_file%%.*}
