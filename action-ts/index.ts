@@ -62,10 +62,32 @@ void (async () => {
   }
 
   const configFile = path.join(__dirname, '../coreboot/.config')
+  const toConfig = (value: boolean): string => value ? 'y' : 'n'
   if (inputs.DISABLE_HECI1_AT_PRE_BOOT !== undefined) {
     console.log('Adding custom DISABLE_HECI1_AT_PRE_BOOT to .config')
-    await fs.appendFile(configFile, `CONFIG_DISABLE_HECI1_AT_PRE_BOOT=${inputs.DISABLE_HECI1_AT_PRE_BOOT ? 'y' : 'n'}\n`, 'utf8')
+    await fs.appendFile(configFile, `CONFIG_DISABLE_HECI1_AT_PRE_BOOT=${toConfig(inputs.DISABLE_HECI1_AT_PRE_BOOT)}\n`, 'utf8')
   } else {
     console.log('Not changing DISABLE_HECI1_AT_PRE_BOOT')
+  }
+
+  if (inputs.EDK2_FULL_SCREEN_SETUP !== undefined) {
+    console.log('Adding custom EDK2_FULL_SCREEN_SETUP to .config')
+    await fs.appendFile(configFile, `EDK2_FULL_SCREEN_SETUP=${toConfig(inputs.EDK2_FULL_SCREEN_SETUP)}\n`, 'utf8')
+  } else {
+    console.log('Not changing EDK2_FULL_SCREEN_SETUP')
+  }
+
+  if (inputs.EDK2_BOOT_MANAGER_ESCAPE !== undefined) {
+    console.log('Adding custom EDK2_BOOT_MANAGER_ESCAPE to .config')
+    await fs.appendFile(configFile, `EDK2_BOOT_MANAGER_ESCAPE=${toConfig(inputs.EDK2_BOOT_MANAGER_ESCAPE)}\n`, 'utf8')
+  } else {
+    console.log('Not changing EDK2_BOOT_MANAGER_ESCAPE')
+  }
+
+  if (inputs.EDK2_BOOT_TIMEOUT !== undefined) {
+    console.log('Adding custom EDK2_BOOT_TIMEOUT to .config')
+    await fs.appendFile(configFile, `EDK2_BOOT_TIMEOUT=${inputs.EDK2_BOOT_TIMEOUT}\n`, 'utf8')
+  } else {
+    console.log('Not changing EDK2_BOOT_TIMEOUT')
   }
 })()

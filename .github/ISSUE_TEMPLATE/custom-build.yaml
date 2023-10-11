@@ -31,7 +31,7 @@ body:
       required: false
   - type: dropdown
     attributes:
-      label: "`DISABLE_HECI1_AT_PRE_BOOT`"
+      label: DISABLE_HECI1_AT_PRE_BOOT
       description: Fixes sleep bugs on MacOS when set to no.
       multiple: false
       options:

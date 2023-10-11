@@ -29,17 +29,27 @@ const parseInputs = (issueBody: string): Inputs => {
     logo = undefined
   }
 
-  const DISABLE_HECI1_AT_PRE_BOOT = new Map<string, boolean | undefined>([
+  const yesNoMap = new Map<string, boolean | undefined>([
     ['None', undefined],
     ['No', false],
     ['Yes', true]
-  ]).get(trimmedNonEmptyLines[5])
+  ])
+  const DISABLE_HECI1_AT_PRE_BOOT = yesNoMap.get(trimmedNonEmptyLines[7])
+
+  const EDK2_FULL_SCREEN_SETUP = yesNoMap.get(trimmedNonEmptyLines[9])
+
+  const EDK2_BOOT_MANAGER_ESCAPE = yesNoMap.get(trimmedNonEmptyLines[11])
+
+  const EDK2_BOOT_TIMEOUT = trimmedNonEmptyLines[13]?.length > 0 ? parseFloat(trimmedNonEmptyLines[13]) : undefined
 
   return {
     firmwareType,
     boardName,
     logo,
-    DISABLE_HECI1_AT_PRE_BOOT
+    DISABLE_HECI1_AT_PRE_BOOT,
+    EDK2_FULL_SCREEN_SETUP,
+    EDK2_BOOT_MANAGER_ESCAPE,
+    EDK2_BOOT_TIMEOUT
   }
 }
 
