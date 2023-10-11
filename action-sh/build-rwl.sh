@@ -121,13 +121,13 @@ fi
 PROJECT_DIR=$(pwd)
 
 cd coreboot
-echo "CONFIG_BOARD_EMULATION_QEMU_X86_Q35=y" >.config
-make clean
-make olddefconfig
+echo "CONFIG_BOARD_EMULATION_QEMU_X86_Q35=y" >>.config
+make clean || exit 1
+make olddefconfig || exit 1
 echo "*** .config ***"
 cat .config
 echo "*** end of .config ***"
-make -j$(nproc)
+make -j$(nproc) || exit 1
 
 rwlegacy_file_without_extension=${rwlegacy_file%%.*}
 
