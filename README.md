@@ -1,4 +1,4 @@
-# Automated building of full ROM for Chromebooks with a custom logo
+# Automated building of Full ROM and Alt FW (edk2) for Chromebooks with a custom logo
 ## Prerequisites
 - Find your model number
 - Have a logo image file which can be uploaded to GitHub issues (`.png` and `.jpg` work)
@@ -12,9 +12,6 @@
 6. Wait for a comment from GitHub Actions about the status of your build
 7. If the build succeeds, download the artifact and use `flashrom` to flash full ROM to your Chromebook. If you are on Linux, you can download [`flashrom` here](http://tree123.org/chrultrabook/utils/flashrom-weirdtreething).
 8. If the build fails, check the logs. You can try the build again by re-opening the issue. Create an issue with a bug report if needed.
-
-## Coming Soon
-Build RW_LEGACY with a custom logo
 
 ## Feature requests
 If you want another feature (such as more options to build coreboot with) open an issue without using the build template.

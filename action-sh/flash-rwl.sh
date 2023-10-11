@@ -8,7 +8,7 @@ echo "Type 'y' if you want to flash rwl. If the new rwl doen't work, you may hav
 read -p "Type your answer here: " OUTPUT || exit 1
 if [[ "$OUTPUT" == "y" ]]; then
     echo "Writing to firmware"
-    sudo ./flashrom -p internal -i RW_LEGACY -w $BUILD_FILE_NAME.bin || exit 1
+    sudo ./flashrom -p internal -w -i RW_LEGACY:$BUILD_FILE_NAME.bin || exit 1
 else
     echo "Not modifying RW_LEGACY"
 fi
