@@ -33,6 +33,7 @@ isStr=false
 isWhl=false
 isCml=false
 isCmlBox=false
+isCmlBook=false
 isPco=false
 isCzn=false
 isMdn=false
@@ -276,57 +277,28 @@ function get_flashrom()
 			cd /tmp/boot/util
 		fi
 
-		download_flashrom=true
-		if [[ "$isChromeOS" = false && "$isChromiumOS" = false ]]; then
-			if ! which flashrom >/dev/null 2>&1; then 
-				echo "    Attempting to install flashrom via distro package manager"
-				#try to install flashrom from distro
-				if which apt >/dev/null 2>&1; then
-					apt update >/dev/null 2>&1 && apt install -y flashrom >/dev/null 2>&1
-				elif which yum >/dev/null 2>&1; then
-					yum install -y flashrom >/dev/null 2>&1
-				elif which pacman >/dev/null 2>&1; then
-					pacman -S flashrom >/dev/null 2>&1
-				fi
-				#check that install successful, newly-installed flashrom can see chip
-				if [[ $? -eq 0 ]] && $(which flashrom) -p internal >/dev/null 2>&1; then
-					echo "    Successfully installed flashrom"
-					download_flashrom=false
-					flashromcmd="$(which flashrom)"
-				else
-					echo "    Unable to install flashrom via package manager; downloading precompiled binary"
-				fi
-			else
-				#check that installed flashrom can see chip
-				if $(which flashrom) -p internal >/dev/null 2>&1; then
-					download_flashrom=false
-					flashromcmd="$(which flashrom)"
-				fi
-			fi
+		if [[ "$isChromeOS" = true ]]; then
+			#needed to avoid dependencies not found on older ChromeOS
+			$CURL -sLo "flashrom.tar.gz" "${util_source}flashrom_old.tar.gz"
+		else
+			$CURL -sLo "flashrom.tar.gz" "${util_source}flashrom_cros_libpci37_20231014.tar.gz"
 		fi
-		if [[ "$download_flashrom" = true ]]; then
-			if [[ "$isChromeOS" = true ]]; then
-				#needed to avoid dependencies not found on older ChromeOS
-				$CURL -sLo "flashrom.tar.gz" "${util_source}flashrom_old.tar.gz"
-			else
-				$CURL -sLo "flashrom.tar.gz" "${util_source}flashrom_libpci37_20231007.tar.gz"
-			fi
-			if [[ $? -ne 0 ]]; then
-				echo_red "Error downloading flashrom; cannot proceed."
-				#restore working dir
-				cd "${working_dir}"
-				return 1
-			fi
-			
-			if ! tar -zxf flashrom.tar.gz --no-same-owner; then
-				echo_red "Error extracting flashrom; cannot proceed."
-				#restore working dir
-				cd "${working_dir}"
-				return 1
-			fi
-			#set +x
-			chmod +x flashrom
+		if [[ $? -ne 0 ]]; then
+			echo_red "Error downloading flashrom; cannot proceed."
+			#restore working dir
+			cd "${working_dir}"
+			return 1
 		fi
+		
+		if ! tar -zxf flashrom.tar.gz --no-same-owner; then
+			echo_red "Error extracting flashrom; cannot proceed."
+			#restore working dir
+			cd "${working_dir}"
+			return 1
+		fi
+		#set +x
+		chmod +x flashrom
+
 		#restore working dir
 		cd "${working_dir}"
 	fi
@@ -540,7 +512,7 @@ ${flashromcmd} --wp-disable > /dev/null 2>&1
 [[ ${swWp} = "enabled" ]] && ${flashromcmd} --wp-enable > /dev/null 2>&1
 
 # disable SW WP and reboot if needed
-if [[ "$isChromeOS" = true &&  "${swWp}" = "enabled" ]]; then
+if [[ "$isChromeOS" = true &&  "${wpEnabled}" != "true" &&  "${swWp}" = "enabled" ]]; then
 	# prompt user to disable swWP and reboot
 	echo_yellow "\nWARNING: your device currently has software write-protect enabled.\n
 If you plan to flash the UEFI firmware, you must first disable it and reboot before flashing.
@@ -549,13 +521,15 @@ Would you like to disable sofware WP and reboot your device?"
 	if [[ "$REPLY" = "y" || "$REPLY" = "Y" ]] ; then
 		echo -e "\nDisabling software WP..."
 		if ! ${flashromcmd} --wp-disable > /dev/null 2>&1; then
-			exit_red "Error disabling software write-protect."; return 1
+			exit_red "\nError disabling software write-protect -- hardware WP is still enabled."; return 1
 		fi
 		echo -e "\nClearing the WP range(s)..."
 		if ! ${flashromcmd} --wp-range 0 0 > /dev/null 2>&1; then
 			# use new command format as of commit 99b9550
 			if ! ${flashromcmd} --wp-range 0,0 > /dev/null 2>&1; then
-				exit_red "Error clearing software write-protect range."; return 1
+   				#re-run to output error
+       				${flashromcmd} --wp-range 0,0
+				exit_red "\nError clearing software write-protect range."; return 1
 			fi
 		fi
 		echo_green "\nSoftware WP disabled, rebooting in 5s"
@@ -574,6 +548,7 @@ elif echo "$firmwareType" | grep -e "Stock" -e "LEGACY"; then
 	# Stock + RW_LEGACY: read HWID from GBB
 	_hwid=$($gbbutilitycmd --get --hwid /tmp/bios.bin | sed -E 's/X86 ?//g' | cut -f 2 -d' ')
 	boardName=${_hwid^^}
+ 	device=${boardName,,}
 else
 	_hwid=${device^^}
 	boardName=${device^^}
@@ -774,8 +749,8 @@ case "${_hwid}" in
 	MAGLIA*)                _x='JSL|Acer Chromebook Spin 512' ;;
 	MAGLITH*)               _x='JSL|Acer Chromebook 511' ;;
 	MAGMA*)                 _x='JSL|Acer Chromebook 315' ;;
-	MAGNETO-BWYB*)          _x='JSL|Acer Chromebook 314' ;;
-	MAGNETO-SGGB*)          _x='JSL|Packard Bell Chromebook 314' ;;
+	MAGNETO-BWYB*)          _x='JSL|Acer Chromebook 314' ; device="magneto" ;;
+	MAGNETO-SGGB*)          _x='JSL|Packard Bell Chromebook 314' ; device="magneto" ;;
 	MAGOLOR*)               _x='JSL|Acer Chromebook Spin 511 [R753T]' ;;
 	MAGPIE*)                _x='JSL|Acer Chromebook 317 [CB317-1H]' ;;
 	MARKARTH*)              _x='MDN|Acer Chromebook Plus 514'; device="markarth" ;;
@@ -789,6 +764,7 @@ case "${_hwid}" in
 	MOLI*)                  _x='ADL|Acer Chromebox CXI5'; device="moli" ;;
 	MONROE*)                _x='HSW|LG Chromebase' ;;
 	MORPHIUS*)              _x='PCO|Lenovo ThinkPad C13 Yoga Chromebook' ;;
+	NAMI*)                  _x='KBL|NAMI Chromebook (multi)' ; device="nami";;
 	NAUTILUS*)              _x='KBL|Samsung Chromebook Plus V2' ;;
 	NASHER360*)             _x='APL|Dell Chromebook 11 2-in-1 5190' ;;
 	NASHER*)                _x='APL|Dell Chromebook 11 5190' ;;
@@ -852,7 +828,7 @@ case "${_hwid}" in
 	SAND*)                  _x='APL|Acer Chromebook 15 (CB515-1HT)' ;;
 	SANTA*)                 _x='APL|Acer Chromebook 11 (CB311-8H)' ;;
 	SARIEN*)                _x='WHL|Dell Latitude 5400' ;;
-	SASUKE*)                _x='JSL|Samsung Galaxy Chromebook Go' ;;
+	SASUKE*)                _x='JSL|Samsung Galaxy Chromebook Go' ; device='sasuke';;
 	SENTRY*)                _x='SKL|Lenovo Thinkpad 13 Chromebook' ;;
 	SETZER*)                _x='BSW|HP Chromebook 11 G5' ;;
 	SHYVANA*)               _x='KBL|Asus Chromebook Flip C433/C434' ;;
@@ -975,6 +951,7 @@ esac
 [[ "${adl[@]}" =~ "$device" ]] && isAdl=true
 [[ "${adl_n[@]}" =~ "$device" ]] && isAdlN=true
 [[ "${cml_boxes[@]}" =~ "$device" ]] && isCmlBox=true
+[[ "${cml_books[@]}" =~ "$device" ]] && isCmlBook=true
 [[ "${shellballs[@]}" =~ "${boardName,,}" ]] && hasShellball=true
 [[ "${UEFI_ROMS[@]}" =~ "$device" ]] && hasUEFIoption=true
 [[ "$isHsw" = true || "$isBdw" = true || "$isByt" = true || "$isBsw" = true \
