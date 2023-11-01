@@ -1,4 +1,6 @@
 # Automated building of Full ROM and Alt FW (edk2) for Chromebooks with a custom logo
+> May not work. For some reason it has recently stopped working on GitHub Actions!
+
 ## Prerequisites
 - Find your model number
 - Have a logo image file which can be uploaded to GitHub issues (`.png` and `.jpg` work)
