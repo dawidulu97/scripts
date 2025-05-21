@@ -1,0 +1,175 @@
+name: Build Coreboot for a Chromebook
+run-name: Build ${{ github.event.issue.title }} for ${{ github.actor }}
+on:
+  issues:
+    types: 
+      - opened
+      - reopened
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context (For Debugging)
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
+      - name: Set build label
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["build"]
+            })
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: "A GitHub Actions build has started for this custom logo. Here is the link to view progress: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        shell: bash
+        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+      - name: Cache npm directory
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install Dependencies for Logo Replacing Script
+        run: npm install
+        working-directory: action-ts
+      - id: script
+        name: Run Logo Replacing Script
+        run: npm start
+        working-directory: action-ts
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+      - name: Install Dependencies for Building Coreboot
+        working-directory: coreboot
+        run: sudo apt-get install -y bison build-essential curl flex git gnat imagemagick libncurses5-dev m4 nasm python-is-python3 uuid-dev zlib1g-dev
+      - name: Restore cached coreboot toolchain
+        id: cache-coreboot-toolchain-restore
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            coreboot/util/crossgcc/tarballs
+            coreboot/util/crossgcc/xgcc
+          key: coreboot-cache-toolchain-v2
+      - name: Build Coreboot Toolchain
+        working-directory: coreboot
+        run: make crossgcc-i386 CPUS=$(nproc)
+      - name: Save coreboot toolchain
+        uses: actions/cache/save@v3
+        with:
+          path: |
+            coreboot/util/crossgcc/tarballs
+            coreboot/util/crossgcc/xgcc
+          key: ${{ steps.cache-coreboot-toolchain-restore.outputs.cache-primary-key }}
+      - name: Restore coreboot build cache
+        id: cache-coreboot-build-restore
+        uses: actions/cache/restore@v3
+        with:
+          path: coreboot/payloads/external/edk2/workspace
+          key: coreboot-cache-build-v2
+      - name: Set build Full Rom label
+        if: ${{ steps.script.outputs.firmwareType == 'FULL_ROM' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["build-full-rom"]
+            })
+      - name: Build Full ROM
+        if: ${{ steps.script.outputs.firmwareType == 'FULL_ROM' }}
+        id: build-full-rom
+        run: ./action-sh/build-full-rom.sh
+        env:
+          BOARD_NAME: ${{ steps.script.outputs.boardName }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+      - name: Set build Alt FW label
+        if: ${{ steps.script.outputs.firmwareType == 'ALT_FW' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["build-alt-fw"]
+            })
+      - name: Customize Alt FW
+        if: ${{ steps.script.outputs.firmwareType == 'ALT_FW' }}
+        id: build-alt-fw
+        run: ./action-sh/build-rwl.sh
+        env:
+          BOARD_NAME: ${{ steps.script.outputs.boardName }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+      - name: Save coreboot build cache
+        uses: actions/cache/save@v3
+        with:
+          path: coreboot/payloads/external/edk2/workspace
+          key: ${{ steps.cache-coreboot-build-restore.outputs.cache-primary-key }}
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.build-full-rom.outputs.artifactName }}${{ steps.build-alt-fw.outputs.artifactName }}
+          path: ${{ steps.build-full-rom.outputs.artifactPath }}${{ steps.build-alt-fw.outputs.artifactPath }}
+      - name: Set success label
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["success"]
+            })
+      - name: Remove failure label
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: failure
+      - name: Close Issue
+        run: gh issue close --comment "The GitHub Action is complete! Download the artifact of the run to flash the firmware" ${{ github.event.issue.number }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  report-failure:
+    needs: 
+      - build
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Set failure label
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["failure"]
+            })
+      - name: Remove success label
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: success
+      - name: Close Issue
+        run: gh issue close --comment "The GitHub Action has failed! See the logs for details" ${{ github.event.issue.number }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
