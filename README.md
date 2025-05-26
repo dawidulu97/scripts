@@ -2,9 +2,9 @@
 > May not work. For some reason it has recently stopped working on GitHub Actions!
 
 ## Prerequisites
-- Find your model number
+- Find your model number (warning) wrong number would cause brick or keyboard not working find ur motherboard name 
 - Have a logo image file which can be uploaded to GitHub issues (`.png` and `.jpg` work)
-
+this is still in beta
 ## Instructions
 1. Click create a new issue. 
 2. Choose the correct template. 
