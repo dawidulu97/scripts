@@ -1,4 +1,4 @@
-# Automated building of Full ROM and Alt FW (edk2) for Chromebooks with a custom logo
+# Automated building of Full ROM and Alt FW (edk2) for Chromebooks with a custom logo (Beta)
 > May not work. For some reason it has recently stopped working on GitHub Actions!
 
 ## Prerequisites
