@@ -1,5 +1,5 @@
 # Automated building of Full ROM and Alt FW (edk2) for Chromebooks with a custom logo (Beta)
-> May not work. For some reason it has recently stopped working on GitHub Actions!
+> updated version it works well 
 
 ## Prerequisites
 - Find your model number (warning) wrong number would cause brick or keyboard not working find ur motherboard name 
