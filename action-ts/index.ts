@@ -31,11 +31,11 @@ void (async () => {
 
     const blob = await r.blob()
     const logoBuffer = Buffer.from(await blob.arrayBuffer())
-    const maxSize = 250
+    const maxSize = 500
 
     let scaledLogo: Jimp
     if (contentType === 'image/svg+xml') {
-      console.log('Detected SVG logo. Creating a 250x250 PNG logo from the SVG logo')
+      console.log('Detected SVG logo. Creating a 500x500 PNG logo from the SVG logo')
       const pngBuffer = await svgToPng(logoBuffer, {
         width: maxSize,
         height: maxSize
