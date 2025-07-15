@@ -31,7 +31,7 @@ void (async () => {
 
     const blob = await r.blob()
     const logoBuffer = Buffer.from(await blob.arrayBuffer())
-    const maxSize = 315
+    const maxSize = 350
 
     let scaledLogo: Jimp
     if (contentType === 'image/svg+xml') {
