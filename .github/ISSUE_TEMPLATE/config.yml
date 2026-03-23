@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: MrChromebox Firmware Utility
+    url: https://mrchromebox.tech
+    about: Official MrChromebox firmware utility for ChromeOS devices
