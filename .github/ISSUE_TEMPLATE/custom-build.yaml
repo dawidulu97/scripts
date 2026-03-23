@@ -1,6 +1,6 @@
 name: Build a Custom Firmware for my Chromebook (Triggers Automated Build)
 description: Change logo and other options
-title: "[Custom Logo Build]: "
+title: ""
 labels: ["build-request"]
 body:
   - type: dropdown
@@ -13,14 +13,45 @@ body:
         - "Alt FW"
     validations:
       required: true
-  - type: input
-    id: board_name
+  - type: dropdown
+    id: board_dropdown
     attributes:
-      label: Board Name
-      description: "Enter the board name of your chromebook"
-      placeholder: jinlon
+      label: Board Name (Selection)
+      description: Select your Chromebook board name from the list.
+      options:
+        - "None (Use manual entry below)"
+        - "jinlon - HP Elite c1030 / x360 13c"
+        - "kled - Acer Chromebook Spin 713 (CP713-2W)"
+        - "kohaku - Samsung Galaxy Chromebook"
+        - "akemi - Lenovo Ideapad Flex 5"
+        - "helios - ASUS Flip C436FA"
+        - "dragonair - HP Chromebook x360 14c"
+        - "dratini - HP Pro c640"
+        - "drallion - Dell Latitude 7410"
+        - "atlas - Google Pixelbook Go"
+        - "eve - Google Pixelbook"
+        - "fizz - ASUS/HP/Acer/Lenovo Chromebox 3"
+        - "nami - Acer 13/Spin 13, Dell 13, HP 14, Lenovo C630"
+        - "octopus - Generic GeminiLake (Acer/HP/Lenovo/Samsung)"
+        - "anahera - HP Elite c640 G3"
+        - "crota - Dell Latitude 5430"
+        - "nissa - Generic AlderLake-N (Lenovo/HP/Acer)"
+        - "puff - Generic CometLake Chromebox (CXI4/G3/etc)"
+        - "hatch - Generic CometLake Chromebook (Spin 713/Flex 5/etc)"
+        - "brya - Generic AlderLake Chromebook"
+        - "brask - Generic AlderLake Chromebox"
+        - "stony - Generic AMD StoneyRidge Chromebook"
+        - "picasso - Generic AMD Picasso Chromebook"
+        - "skyrim - Generic AMD Mendocino Chromebook"
     validations:
       required: true
+  - type: input
+    id: board_manual
+    attributes:
+      label: Manual Board Name
+      description: If not in the list, enter the board name manually (all lowercase).
+    validations:
+      required: false
   - type: textarea
     id: logo
     attributes:
@@ -43,17 +74,26 @@ body:
       description: Use the full screen for the edk2 frontpage
       multiple: false
       options:
-        - "No"
         - "Yes"
+        - "No"
   - type: dropdown
     attributes:
       label: EDK2_BOOT_MANAGER_ESCAPE
       description: Use Escape key for Boot Manager
       multiple: false
       options:
-        - "No"
         - "Yes"
+        - "No"
   - type: input
     attributes:
       label: EDK2_BOOT_TIMEOUT
       description: Set the timeout for boot menu prompt (seconds)
+      value: "3"
+  - type: dropdown
+    attributes:
+      label: UNHIDE_BIOMETRIC
+      description: Unhide Fingerprint sensor in Device Manager (CRFP0000)
+      multiple: false
+      options:
+        - "No"
+        - "Yes"

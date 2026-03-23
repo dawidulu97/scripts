@@ -90,4 +90,42 @@ void (async () => {
   } else {
     console.log('Not changing EDK2_BOOT_TIMEOUT')
   }
+
+  if (inputs.unhideBiometric === true) {
+    console.log(`Attempting to unhide biometric sensor for board: ${inputs.boardName}`)
+    const mainboardDir = path.join(__dirname, '../coreboot/src/mainboard')
+    const findOverridetree = async (dir: string): Promise<string | undefined> => {
+      const entries = await fs.readdir(dir, { withFileTypes: true })
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name)
+        if (entry.isDirectory()) {
+          if (entry.name === inputs.boardName) {
+            // Check if overridetree.cb exists in this directory or its offspring
+            const files = await fs.readdir(fullPath)
+            if (files.includes('overridetree.cb')) {
+              return path.join(fullPath, 'overridetree.cb')
+            }
+          }
+          const result = await findOverridetree(fullPath)
+          if (result !== undefined) return result
+        }
+      }
+      return undefined
+    }
+
+    const overridetreePath = await findOverridetree(mainboardDir)
+    if (overridetreePath !== undefined) {
+      console.log(`Found overridetree.cb at: ${overridetreePath}`)
+      let content = await fs.readFile(overridetreePath, 'utf8')
+      if (content.includes('device spi 1 hidden end')) {
+        console.log('Patching overridetree.cb to unhide fingerprint sensor')
+        content = content.replace('device spi 1 hidden end', 'device spi 1 on end')
+        await fs.writeFile(overridetreePath, content, 'utf8')
+      } else {
+        console.log('Fingerprint sensor already "on" or not found in known format')
+      }
+    } else {
+      console.log(`Could not find overridetree.cb for board: ${inputs.boardName}`)
+    }
+  }
 })()

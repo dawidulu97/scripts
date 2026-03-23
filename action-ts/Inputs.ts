@@ -8,6 +8,7 @@ interface Inputs {
   EDK2_FULL_SCREEN_SETUP?: boolean
   EDK2_BOOT_MANAGER_ESCAPE?: boolean
   EDK2_BOOT_TIMEOUT?: number
+  unhideBiometric?: boolean
 }
 
 export default Inputs

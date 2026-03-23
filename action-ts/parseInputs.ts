@@ -1,4 +1,4 @@
-import never from 'never'
+const never = (msg: string): never => { throw new Error(msg) }
 import type Inputs from './Inputs'
 import FirmwareType from './FirmwareType'
 
@@ -18,9 +18,17 @@ const parseInputs = (issueBody: string): Inputs => {
     ['Alt FW', FirmwareType.ALT_FW]
   ]).get(trimmedNonEmptyLines[1]) ?? never('Invalid firmware type')
 
-  const boardName = trimmedNonEmptyLines[3].toLowerCase()
+  const boardDropdownValue = trimmedNonEmptyLines[3]
+  const boardManualValue = trimmedNonEmptyLines[5]
+  let boardName: string
+  if (boardDropdownValue.startsWith('None')) {
+    boardName = boardManualValue.toLowerCase()
+  } else {
+    // Extract first part (e.g., 'jinlon' from 'jinlon - HP Elite c1030')
+    boardName = boardDropdownValue.split(' - ')[0].toLowerCase().trim()
+  }
 
-  const logoMarkdown = trimmedNonEmptyLines[5]
+  const logoMarkdown = trimmedNonEmptyLines[7]
   let logo: string | undefined
   if (logoMarkdown !== '_No response_') {
     const imageUrlRegex = /!\[.*\]\((.*)\)/g
@@ -34,13 +42,15 @@ const parseInputs = (issueBody: string): Inputs => {
     ['No', false],
     ['Yes', true]
   ])
-  const DISABLE_HECI1_AT_PRE_BOOT = yesNoMap.get(trimmedNonEmptyLines[7])
+  const DISABLE_HECI1_AT_PRE_BOOT = yesNoMap.get(trimmedNonEmptyLines[9])
 
-  const EDK2_FULL_SCREEN_SETUP = yesNoMap.get(trimmedNonEmptyLines[9])
+  const EDK2_FULL_SCREEN_SETUP = yesNoMap.get(trimmedNonEmptyLines[11])
 
-  const EDK2_BOOT_MANAGER_ESCAPE = yesNoMap.get(trimmedNonEmptyLines[11])
+  const EDK2_BOOT_MANAGER_ESCAPE = yesNoMap.get(trimmedNonEmptyLines[13])
 
-  const EDK2_BOOT_TIMEOUT = trimmedNonEmptyLines[13]?.length > 0 ? parseFloat(trimmedNonEmptyLines[13]) : undefined
+  const EDK2_BOOT_TIMEOUT = trimmedNonEmptyLines[15]?.length > 0 ? parseFloat(trimmedNonEmptyLines[15]) : undefined
+
+  const UNHIDE_BIOMETRIC = yesNoMap.get(trimmedNonEmptyLines[17])
 
   return {
     firmwareType,
@@ -49,7 +59,8 @@ const parseInputs = (issueBody: string): Inputs => {
     DISABLE_HECI1_AT_PRE_BOOT,
     EDK2_FULL_SCREEN_SETUP,
     EDK2_BOOT_MANAGER_ESCAPE,
-    EDK2_BOOT_TIMEOUT
+    EDK2_BOOT_TIMEOUT,
+    unhideBiometric: UNHIDE_BIOMETRIC
   }
 }
 
