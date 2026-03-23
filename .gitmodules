@@ -1,4 +1,4 @@
 [submodule "coreboot"]
     path = coreboot
     url = https://github.com/MrChromebox/coreboot
-    branch = MrChromebox-2512
+	branch = MrChromebox-2512
