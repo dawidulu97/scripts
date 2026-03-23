@@ -1,7 +1,6 @@
 name: Build a Custom Firmware for my Chromebook (Triggers Automated Build)
 description: Change logo and other options
-title: ""
-labels: ["build-request"]
+title: "[Custom Logo Build]: "
 body:
   - type: dropdown
     attributes:
